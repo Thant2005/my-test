@@ -2,7 +2,10 @@ import { supabase } from "../lib/supabaseClient";
 import type { Task } from "../types/task";
 
 const getTasks = async (table: string): Promise<Task[]> => {
-  const { data, error } = await supabase.from(table).select("*");
+  const { data, error } = await supabase
+    .from(table)
+    .select("*")
+    .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return data;
 };
@@ -27,7 +30,7 @@ const toggleTask = async (
 ): Promise<Task> => {
   const { data, error } = await supabase
     .from(table)
-    .update({ is_completed: !currentStatus })
+    .update({ is_completed: currentStatus })
     .eq("id", id)
     .select()
     .single();
@@ -39,5 +42,11 @@ const deleteTask = async (table: string, id: string) => {
   const { error } = await supabase.from(table).delete().eq("id", id);
   if (error) throw new Error(error.message);
 };
-
-export { getTasks, addTask, toggleTask, deleteTask };
+const clearCompleted = async (table: string) => {
+  const { error } = await supabase
+    .from(table)
+    .delete()
+    .eq("is_completed", true);
+  if (error) throw new Error(error.message);
+};
+export { getTasks, addTask, toggleTask, deleteTask, clearCompleted };

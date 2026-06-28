@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addTask,
+  clearCompleted,
   deleteTask,
   getTasks,
   toggleTask,
@@ -44,4 +45,11 @@ const useDeleteTask = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: TASK_KEY }),
   });
 };
-export { useTasks, useAddTask, useToggleTask, useDeleteTask };
+const useCompleted = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => clearCompleted("tasks"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: TASK_KEY }),
+  });
+};
+export { useTasks, useAddTask, useToggleTask, useDeleteTask, useCompleted };
